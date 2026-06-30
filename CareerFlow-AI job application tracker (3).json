@@ -1,0 +1,237 @@
+{
+  "name": "CareerFlow-AI job application tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "muqeet2703@gmail.com",
+          "mode": "list",
+          "cachedResultName": "muqeet2703@gmail.com"
+        },
+        "start": "=={{$json[\"Application Deadline\"]}}",
+        "end": "=={{$json[\"Application Deadline\"]}}",
+        "additionalFields": {
+          "summary": "=={{\"Job Application: \" + $json[\"Company Name\"] + \" - \" + $json[\"Job Role\"]}}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        144
+      ],
+      "id": "d9192ced-f6a6-4a48-909d-e47bbff2d1f9",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "qhdj2Vh9aMWrt9CP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "Follow-up regarding internship application",
+        "message": "=={{ $('Basic LLM Chain').item.json.text }}",
+        "options": {
+          "sendTo": "muqeet2703@gmail.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        -96
+      ],
+      "id": "b1068190-a784-47d9-adc5-76d8f24450ac",
+      "name": "Create a draft",
+      "webhookId": "be284c65-cfaf-4bbf-b2db-29406e8a54d5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zXcMjJ2qhEqarnV3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "aecb9400-c043-4736-b4b0-54ff1d6c42aa",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "GwLSdO774BxjA2s4",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            },
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1SyvMUeisoRCnzAuVSXy8Fmoj7eaCud9Bu7LNzCYPjcM",
+          "mode": "list",
+          "cachedResultName": "CareerFlow Responses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SyvMUeisoRCnzAuVSXy8Fmoj7eaCud9Bu7LNzCYPjcM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 432052075,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SyvMUeisoRCnzAuVSXy8Fmoj7eaCud9Bu7LNzCYPjcM/edit#gid=432052075"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -80
+      ],
+      "id": "d0bae1f5-3884-4fd0-bc52-c6808b28c3f0",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "CHLFO5TtUtcZhfKr",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a helpful assistant.\n\nWrite a professional follow-up email for a job application.\n\nCompany: {{$json[\"Company Name\"]}}\nJob Role: {{$json[\"Job Role\"]}}\n\nKeep it short and professional.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        432,
+        -192
+      ],
+      "id": "423c31f2-e5ff-4755-8f34-2885906a15a5",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "chatId": "5318077914",
+        "text": "=🚀 CareerFlow Update\n\n🏢 Company: {{ $('Google Sheets Trigger').item.json[\"Company Name\"] }}\n💼 Role: {{ $('Google Sheets Trigger').item.json[\"Job Role\"] }}\n📅 Deadline: {{ $('Google Sheets Trigger').item.json[\"Application Deadline\"] }}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        -80
+      ],
+      "id": "42537bdc-d431-4051-a7ad-32191a36f284",
+      "name": "Send a text message",
+      "webhookId": "3be70f16-34e3-46b6-9896-1d1d253fbce4",
+      "credentials": {
+        "telegramApi": {
+          "id": "B4jqu0DQhtYvN9MF",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fc7297cc-85ea-4349-93d5-e595644ff538",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "576473b432b9a0097cc70db0809bc204bdd27270da468fbd9c2e4f154f5d4312"
+  },
+  "nodeGroups": [],
+  "id": "0xvdL0QXYbdciTgo",
+  "tags": []
+}
