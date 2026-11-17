@@ -20,7 +20,7 @@ Consistency is key when applying for jobs, but manually tracking companies, miss
 The workflow flows linearly and efficiently across the following interconnected nodes:
 
 1. **Google Sheets Trigger (Polling):** Continuously monitors the target Google Spreadsheet (`CareerFlow Responses`) for newly appended data rows (capturing fields like `Company Name`, `Job Role`, and `Application Deadline`).
-2. **Google Calendar Node (Create an Event):** Ingests the application deadline data and automatically creates a designated event (`Job Application: [Company] - [Role]`) inside the user's primary calendar (`muqeet2703@gmail.com`).
+2. **Google Calendar Node (Create an Event):** Ingests the application deadline data and automatically creates a designated event (`Job Application: [Company] - [Role]`) inside the user's primary calendar (`your-email@gmail.com`).
 3. **Basic LLM Chain & Groq Chat Model:** The brain of the automation. It utilizes the highly capable `llama-3.3-70b-versatile` model via Groq to construct a tailored, professional follow-up or application email text based on context variables.
 4. **Gmail Node (Create a Draft):** Ingests the rich text output from the LangChain LLM model and places it safely into a fresh email draft folder, ready for human review.
 5. **Telegram Node (Send a Text Message):** Broadcasts a neat workspace summary detailing the company name, role, and key deadline to a designated Telegram chat ID via custom expression tags.
